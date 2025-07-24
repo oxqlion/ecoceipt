@@ -61,6 +61,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation("com.google.guava:guava:31.1-android")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     implementation("androidx.navigation:navigation-compose:2.7.6")
