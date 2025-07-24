@@ -61,6 +61,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("com.google.guava:guava:31.1-android")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")

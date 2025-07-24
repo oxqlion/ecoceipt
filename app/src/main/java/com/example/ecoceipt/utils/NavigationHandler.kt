@@ -23,6 +23,10 @@ import com.example.ecoceipt.ui.views.ItemListView
 import com.example.ecoceipt.ui.views.OCRSummaryView
 import com.example.ecoceipt.ui.views.ProfileView
 import com.example.ecoceipt.ui.views.ScanView
+import com.example.ecoceipt.viewmodels.DashboardViewModel
+import com.example.ecoceipt.viewmodels.ProfileViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 // Define your navigation routes
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
@@ -62,23 +66,30 @@ fun BottomNavigationBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
         bottomNavItems.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = screen.title) },
                 label = { Text(screen.title) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                ),
                 onClick = {
                     navController.navigate(screen.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
+                        // This logic is correct. It pops the back stack to the start
+                        // destination (Dashboard) before navigating. This ensures you
+                        // don't build up a large stack of screens.
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
                 }
@@ -89,16 +100,17 @@ fun BottomNavigationBar(navController: NavController) {
 
 @Composable
 fun NavigationGraph(
-    navController: NavController,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navController as NavHostController,
+        navController = navController,
         startDestination = Screen.Dashboard.route,
         modifier = modifier
     ) {
         composable(Screen.Dashboard.route) {
-            DashboardView()
+            val viewModel: DashboardViewModel = viewModel()
+            DashboardView(navController = navController, viewModel = viewModel)
         }
         composable(Screen.Scan.route) {
             ScanView(navController = navController)
@@ -107,9 +119,12 @@ fun NavigationGraph(
             ItemListView()
         }
 
-        // Example of additional pages that won't be in the navigation bar
         composable("profile") {
-            ProfileView()
+            // CRITICAL FIX: You MUST pass the navController to the ProfileView.
+            // This connects it to the main navigation graph, allowing the
+            // BottomNavigationBar to correctly pop it off the stack.
+            val viewModel: ProfileViewModel = viewModel()
+            ProfileView(navController = navController, viewModel = viewModel)
         }
         composable(
             route = "summary/{extractedText}",
