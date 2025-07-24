@@ -9,12 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OCRSummaryView() {
+fun OCRSummaryView(extractedText: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("INI OCR SUMMARY VIEW BANG")
+        Text("Extracted Text:")
+        Text(text = extractedText)
     }
 }

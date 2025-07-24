@@ -1,0 +1,26 @@
+package com.example.ecoceipt.utils
+
+import android.content.Context
+import android.net.Uri
+import com.example.ecoceipt.models.ReceiptModel
+import com.example.ecoceipt.repository.ReceiptRepository
+
+class ExtractTextFromImageUseCase(
+    private val repository: ReceiptRepository
+) {
+    suspend operator fun invoke(imageUri: Uri, context: Context): Result<ReceiptModel> {
+        return repository.extractTextFromImage(imageUri, context)
+            .map { extractedText ->
+                parseReceiptData(extractedText.rawText)
+            }
+    }
+
+    private fun parseReceiptData(text: String): ReceiptModel {
+        // Implement parsing logic for receipt-specific data
+        // This is where you'd extract store name, date, total, items, etc.
+        return ReceiptModel(
+            fullText = text,
+            // Add parsing logic for specific fields
+        )
+    }
+}
