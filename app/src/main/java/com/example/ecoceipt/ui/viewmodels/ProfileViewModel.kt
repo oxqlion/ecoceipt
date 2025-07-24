@@ -1,4 +1,4 @@
-package com.example.ecoceipt.viewmodels
+package com.example.ecoceipt.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.example.ecoceipt.models.UserModel

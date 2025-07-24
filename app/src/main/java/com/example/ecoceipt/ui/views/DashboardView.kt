@@ -8,7 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.ecoceipt.viewmodels.DashboardViewModel
+import com.example.ecoceipt.ui.viewmodels.DashboardViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ReceiptLong
@@ -81,7 +82,6 @@ fun DashboardView(
                 }
             } else {
                 RevenueChartSection(
-                    selectedPeriod = uiState.selectedPeriod,
                     revenueData = uiState.revenueData,
                     totalRevenue = uiState.totalRevenue
                 )
@@ -255,7 +255,6 @@ fun TimePeriodSelector(selectedPeriod: String, onPeriodSelected: (String) -> Uni
 
 @Composable
 fun RevenueChartSection(
-    selectedPeriod: String,
     revenueData: List<Pair<String, Double>>,
     totalRevenue: Double
 ) {
@@ -389,7 +388,7 @@ fun ReceiptItemCard(receipt: ReceiptModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.ReceiptLong,
+                imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                 contentDescription = "Receipt",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)

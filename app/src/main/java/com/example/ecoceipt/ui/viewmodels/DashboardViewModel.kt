@@ -1,4 +1,4 @@
-package com.example.ecoceipt.viewmodels
+package com.example.ecoceipt.ui.viewmodels
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -21,19 +21,18 @@ import java.time.temporal.WeekFields
 import java.util.Locale
 
 data class DashboardUiState(
-    val userName: String = "Samuel Lie", // Default name, can be fetched later
+    val userName: String = "Samuel Lie",
     val aiRecommendation: String = "",
     val selectedPeriod: String = "Weekly",
     val revenueData: List<Pair<String, Double>> = emptyList(),
     val totalRevenue: Double = 0.0,
-    val receipts: List<ReceiptModel> = emptyList(), // All fetched receipts
+    val receipts: List<ReceiptModel> = emptyList(),
     val isLoading: Boolean = true,
     val errorMessage: String? = null
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
 class DashboardViewModel(
-    // Repositories are injected for real data access
     private val receiptRepository: ReceiptRepository = ReceiptRepository(),
     private val llmRepository: LLMRepository = LLMRepository()
 ) : ViewModel() {
@@ -42,7 +41,6 @@ class DashboardViewModel(
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
-        // Load all necessary data when the ViewModel is created.
         loadInitialData()
     }
 
@@ -50,21 +48,17 @@ class DashboardViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                // In a real app, this would come from your auth service.
                 val userId = "3s8mnAExkbJHYOVnVrfQ"
 
-                // Fetch receipts and AI recommendation from the real repositories.
                 val receipts = receiptRepository.getReceiptsForUser(userId)
                 val recommendationResult = llmRepository.getAIResultByUserId(userId)
 
                 _uiState.update { currentState ->
                     currentState.copy(
                         receipts = receipts,
-                        // Access the correct field from the new AIResultModel
                         aiRecommendation = recommendationResult?.recommendationSummary ?: "No recommendations available at the moment.",
                     )
                 }
-                // After fetching, process the data for the default view ("Weekly").
                 processRevenueData("Weekly")
 
             } catch (e: Exception) {
