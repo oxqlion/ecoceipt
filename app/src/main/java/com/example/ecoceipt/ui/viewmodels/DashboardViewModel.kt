@@ -20,7 +20,6 @@ import java.time.ZoneId
 import java.time.temporal.WeekFields
 import java.util.Locale
 
-// The single source of truth for the UI, combining both versions.
 data class DashboardUiState(
     val userName: String = "Samuel Lie", // Default name, can be fetched later
     val aiRecommendation: String = "",
@@ -75,7 +74,6 @@ class DashboardViewModel(
     }
 
     fun updatePeriod(period: String) {
-        // This function no longer fetches data, it just re-processes the existing data.
         processRevenueData(period)
     }
 
@@ -92,12 +90,10 @@ class DashboardViewModel(
                 selectedPeriod = period,
                 revenueData = revenueData,
                 totalRevenue = totalRevenue,
-                isLoading = false // Loading is finished after the first processing
+                isLoading = false
             )
         }
     }
-
-    // --- Private Data Processing Functions (from your friend's code, adapted) ---
 
     private fun processWeeklyRevenue(receipts: List<ReceiptModel>): Pair<List<Pair<String, Double>>, Double> {
         val now = LocalDate.now()
@@ -107,7 +103,7 @@ class DashboardViewModel(
         receipts.forEach { receipt ->
             val date = Instant.ofEpochMilli(receipt.date).atZone(ZoneId.systemDefault()).toLocalDate()
             if (!date.isBefore(firstDayOfWeek) && date.isBefore(firstDayOfWeek.plusWeeks(1))) {
-                val dayIndex = date.dayOfWeek.value - 1 // Monday is 0, Sunday is 6
+                val dayIndex = date.dayOfWeek.value - 1
                 revenuePerDay[dayIndex] += receipt.totalAmount
             }
         }

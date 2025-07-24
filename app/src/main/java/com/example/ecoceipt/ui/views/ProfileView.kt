@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.ecoceipt.viewmodels.ProfileViewModel
-// ... other imports from your original file ...
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -31,10 +30,10 @@ import com.example.tim_sam_2.ui.theme.EcoColors
 @Composable
 fun ProfileView(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel() // Inject ViewModel
+    viewModel: ProfileViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val user = uiState.user // Get the user from the state
+    val user = uiState.user
 
     Column(
         modifier = Modifier
@@ -45,7 +44,7 @@ fun ProfileView(
             title = { Text("Profile", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.Default.ArrowBack, "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.ArrowBackIosNew, "Back", tint = MaterialTheme.colorScheme.onSurface)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -54,7 +53,6 @@ fun ProfileView(
             )
         )
 
-        // Only display content if the user is not null
         if (user != null) {
             Column(
                 modifier = Modifier
@@ -74,7 +72,6 @@ fun ProfileView(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         } else {
-            // Optional: Show a loading indicator while user data is being fetched
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -82,9 +79,6 @@ fun ProfileView(
     }
 }
 
-// The rest of ProfileView.kt (sub-composables) remains exactly the same.
-// They were already stateless and will work perfectly with the data passed from the main composable.
-// ... (ProfilePictureSection, UserInfoSection, etc.)
 @Composable
 fun ProfilePictureSection(userName: String) {
     Column(
