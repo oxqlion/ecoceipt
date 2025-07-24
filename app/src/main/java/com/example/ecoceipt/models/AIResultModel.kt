@@ -5,6 +5,6 @@ data class AIResultModel(
     val receiptId: String = "",
     val userId: String = "",
     val recommendationSummary: String = "",
-    val recommendationItems: Map<ItemModel, String> = emptyMap(),
+    val recommendationItems: List<AIRecommendationModel> = emptyList(),
     val createdAt: Long = System.currentTimeMillis()
 )
