@@ -2,12 +2,17 @@ package com.example.ecoceipt.ui.views.camera
 
 import android.Manifest
 import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -33,31 +38,42 @@ fun CameraScreen(
     }
 
     if (cameraPermission.status.isGranted) {
-        Column {
-            CameraPreview(
-                onImageCaptured = { uri ->
-                    viewModel.processCapturedImage(uri, context)
-                },
-                onNavigateBack = onNavigateBack
-            )
-
-            // Display extracted text
-            viewModel.extractedText?.let { text ->
-                Text(
-                    text = text,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
+        if(viewModel.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-
-            // Display error
-            viewModel.error?.let { error ->
-                Text(
-                    text = "Error: $error",
-                    color = Color.Red,
-                    modifier = Modifier.padding(16.dp)
+        } else {
+            Column {
+                CameraPreview(
+                    onImageCaptured = { uri ->
+                        Log.d("CameraScreen", "Image captured: $uri")
+                        Log.d("CameraScreen", "LOADINGGGGGGGG")
+                        viewModel.processCapturedImage(uri, context)
+                    },
+                    onNavigateBack = onNavigateBack
                 )
+
+                // Display extracted text
+                viewModel.extractedText?.let { text ->
+                    Text(
+                        text = text,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
+
+                // Display error
+                viewModel.error?.let { error ->
+                    Text(
+                        text = "Error: $error",
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
     } else {
