@@ -87,7 +87,6 @@ class ItemListViewModel : ViewModel() {
 }
 
 
-
 //package com.example.ecoceipt.ui.viewmodels
 //
 //import androidx.lifecycle.ViewModel
