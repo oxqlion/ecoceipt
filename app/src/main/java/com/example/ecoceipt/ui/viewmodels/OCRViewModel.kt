@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.ecoceipt.repository.ReceiptRepository
+import com.example.ecoceipt.repository.OCRRepository
 import com.example.ecoceipt.utils.ExtractTextFromImageUseCase
 import kotlinx.coroutines.launch
 
@@ -40,7 +40,7 @@ class OCRViewModelFactory(
     private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val repository = ReceiptRepository()
+        val repository = OCRRepository()
         val useCase = ExtractTextFromImageUseCase(repository)
         return OCRViewModel(useCase) as T
     }

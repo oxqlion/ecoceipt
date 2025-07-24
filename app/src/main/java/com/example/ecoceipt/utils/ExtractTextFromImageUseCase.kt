@@ -3,10 +3,10 @@ package com.example.ecoceipt.utils
 import android.content.Context
 import android.net.Uri
 import com.example.ecoceipt.models.ReceiptModel
-import com.example.ecoceipt.repository.ReceiptRepository
+import com.example.ecoceipt.repository.OCRRepository
 
 class ExtractTextFromImageUseCase(
-    private val repository: ReceiptRepository
+    private val repository: OCRRepository
 ) {
     suspend operator fun invoke(imageUri: Uri, context: Context): Result<ReceiptModel> {
         return repository.extractTextFromImage(imageUri, context)

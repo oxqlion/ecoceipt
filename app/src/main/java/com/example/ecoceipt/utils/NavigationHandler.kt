@@ -118,8 +118,9 @@ fun NavigationGraph(
             })
         ) { backStackEntry ->
             val text = backStackEntry.arguments?.getString("extractedText") ?: ""
-            OCRSummaryView(extractedText = text)
+            OCRSummaryView(extractedText = text, navController = navController)
         }
+
 
     }
 }
