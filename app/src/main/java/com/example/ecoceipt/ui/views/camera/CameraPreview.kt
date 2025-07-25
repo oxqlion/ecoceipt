@@ -6,13 +6,11 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
@@ -28,7 +26,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -58,7 +55,6 @@ fun CameraPreview(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Camera Preview
         AndroidView(
             factory = { ctx ->
                 val previewView = PreviewView(ctx)
@@ -86,7 +82,6 @@ fun CameraPreview(
                             imageCapture
                         )
                     } catch (exc: Exception) {
-                        // Handle camera binding error
                     }
                 }, ContextCompat.getMainExecutor(ctx))
 
@@ -95,7 +90,6 @@ fun CameraPreview(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Receipt Frame Overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,22 +107,11 @@ fun CameraPreview(
                     )
             )
 
-            // Corner indicators
             CornerIndicators()
         }
 
-        // Top Bar
         TopAppBar(
             title = { Text("Scan Receipt") },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-            },
             actions = {
                 IconButton(
                     onClick = {
@@ -150,7 +133,6 @@ fun CameraPreview(
             )
         )
 
-        // Bottom Controls
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -158,7 +140,6 @@ fun CameraPreview(
                 .padding(bottom = 32.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            // Capture Button
             Button(
                 onClick = {
                     if (!isCapturing) {
@@ -197,7 +178,6 @@ fun CameraPreview(
             }
         }
 
-        // Instructions Text
         Card(
             modifier = Modifier
                 .align(Alignment.TopCenter),
@@ -221,7 +201,6 @@ private fun CornerIndicators() {
     val strokeWidth = 3.dp
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Top Left
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -243,7 +222,6 @@ private fun CornerIndicators() {
             }
         }
 
-        // Top Right
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -265,7 +243,6 @@ private fun CornerIndicators() {
             }
         }
 
-        // Bottom Left
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -287,7 +264,6 @@ private fun CornerIndicators() {
             }
         }
 
-        // Bottom Right
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -323,7 +299,6 @@ private fun captureImage(
 
     onCaptureStart()
 
-    // Create unique filename
     val name = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
         .format(System.currentTimeMillis())
 
@@ -345,7 +320,6 @@ private fun captureImage(
 
             override fun onError(exception: ImageCaptureException) {
                 onCaptureComplete()
-                // Handle error - you might want to show a toast or error message
             }
         }
     )

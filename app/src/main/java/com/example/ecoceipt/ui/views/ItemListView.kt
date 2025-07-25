@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -20,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecoceipt.models.ItemModel
-import com.example.ecoceipt.viewmodels.ItemListViewModel
+import com.example.ecoceipt.ui.viewmodels.ItemListViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -30,7 +31,7 @@ fun ItemListView(
     viewModel: ItemListViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true) // Fully expand sheet
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
         topBar = {
@@ -41,8 +42,15 @@ fun ItemListView(
                     titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewModel.onOpenSheet() },
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Item")
+            }
         }
-        // REMOVED: The FloatingActionButton is no longer here.
     ) { paddingValues ->
 
         Box(
@@ -54,8 +62,7 @@ fun ItemListView(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (uiState.items.isEmpty()) {
                 Text(
-                    // UPDATED: Changed empty state text
-                    text = "No items available.",
+                    text = "No items yet.\nTap the '+' button to add your first item.",
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier
@@ -83,17 +90,18 @@ fun ItemListView(
                 onDismissRequest = { viewModel.onDismissSheet() },
                 sheetState = sheetState
             ) {
-                // Pass the selected item which is guaranteed to be non-null here
-                uiState.selectedItem?.let { itemToEdit ->
-                    ItemFormSheetContent(
-                        selectedItem = itemToEdit,
-                        onSave = { id, name, price, desc ->
+                ItemFormSheetContent(
+                    selectedItem = uiState.selectedItem,
+                    onSave = { id, name, price, desc ->
+                        if (id != null) {
                             viewModel.updateItem(id, name, price, desc)
-                            viewModel.onDismissSheet()
-                        },
-                        onCancel = { viewModel.onDismissSheet() }
-                    )
-                }
+                        } else {
+                            viewModel.addItem(name, price, desc)
+                        }
+                        viewModel.onDismissSheet()
+                    },
+                    onCancel = { viewModel.onDismissSheet() }
+                )
             }
         }
     }
@@ -162,36 +170,30 @@ fun ItemCard(
 
 @Composable
 fun ItemFormSheetContent(
-    selectedItem: ItemModel,
-    onSave: (id: String, name: String, price: String, description: String) -> Unit,
+    selectedItem: ItemModel?,
+    onSave: (id: String?, name: String, price: String, description: String) -> Unit,
     onCancel: () -> Unit
 ) {
-    var name by remember { mutableStateOf(selectedItem.name) }
-    var price by remember { mutableStateOf(selectedItem.price.takeIf { it > 0 }?.toString() ?: "") }
-    var description by remember { mutableStateOf(selectedItem.description) }
+    var name by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    LaunchedEffect(selectedItem) {
+        name = selectedItem?.name ?: ""
+        price = selectedItem?.price?.takeIf { it > 0 }?.toString() ?: ""
+        description = selectedItem?.description ?: ""
+    }
 
     val isFormValid = name.isNotBlank() && price.isNotBlank()
 
     Column(
-        // CRITICAL FIX: Added windowInsetsPadding to avoid the system navigation bar
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
-        // Drag handle - a nice touch for bottom sheets
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Divider(
-                modifier = Modifier
-                    .width(40.dp)
-                    .padding(vertical = 12.dp),
-                thickness = 4.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-            )
-        }
-
         Text(
-            text = "Edit Item", // Title is now static
+            text = if (selectedItem == null) "Add New Item" else "Edit Item",
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
                 .fillMaxWidth()
@@ -229,14 +231,14 @@ fun ItemFormSheetContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp), // Padding at the very bottom
+                .padding(bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
                 Text("Cancel")
             }
             Button(
-                onClick = { onSave(selectedItem.id, name, price, description) },
+                onClick = { onSave(selectedItem?.id, name, price, description) },
                 modifier = Modifier.weight(1f),
                 enabled = isFormValid
             ) {
@@ -247,7 +249,8 @@ fun ItemFormSheetContent(
 }
 
 fun formatItemPrice(price: Double): String {
-    val format = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+    val locale = Locale.Builder().setLanguage("in").setRegion("ID").build()
+    val format = NumberFormat.getCurrencyInstance(locale)
     format.maximumFractionDigits = 0
     return format.format(price)
 }

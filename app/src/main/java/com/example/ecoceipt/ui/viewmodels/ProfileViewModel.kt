@@ -20,8 +20,6 @@ class ProfileViewModel : ViewModel() {
     }
 
     private fun loadUserProfile() {
-        // In the future, this will fetch user data from Firebase.
-        // For now, we use a dummy model.
         _uiState.value = ProfileUiState(
             user = UserModel(
                 name = "Samuel Lie",

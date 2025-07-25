@@ -25,16 +25,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ecoceipt.models.UserModel
-import com.example.tim_sam_2.ui.theme.EcoColors
+import com.example.ecoceipt.ui.theme.EcoColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileView(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel() // Inject ViewModel
+    viewModel: ProfileViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val user = uiState.user // Get the user from the state
+    val user = uiState.user
 
     Column(
         modifier = Modifier
@@ -54,7 +54,6 @@ fun ProfileView(
             )
         )
 
-        // Only display content if the user is not null
         if (user != null) {
             Column(
                 modifier = Modifier
@@ -74,7 +73,6 @@ fun ProfileView(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         } else {
-            // Optional: Show a loading indicator while user data is being fetched
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -82,9 +80,6 @@ fun ProfileView(
     }
 }
 
-// The rest of ProfileView.kt (sub-composables) remains exactly the same.
-// They were already stateless and will work perfectly with the data passed from the main composable.
-// ... (ProfilePictureSection, UserInfoSection, etc.)
 @Composable
 fun ProfilePictureSection(userName: String) {
     Column(

@@ -1,4 +1,4 @@
-package com.example.tim_sam_2.ui.theme
+package com.example.ecoceipt.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -13,18 +13,14 @@ val MontserratFamily = androidx.compose.ui.text.font.FontFamily(
 
 )
 
-// Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = MontserratFamily, // Use Montserrat
+        fontFamily = MontserratFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    // It's highly recommended to define all Material 3 text styles
-    // to ensure consistent typography throughout your app.
-    // Here are the rest of the styles, updated to use Montserrat:
     displayLarge = TextStyle(
         fontFamily = MontserratFamily,
         fontWeight = FontWeight.Normal,
@@ -69,7 +65,7 @@ val Typography = Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = MontserratFamily,
-        fontWeight = FontWeight.Normal, // Material Design default is Regular (Normal) for titleLarge
+        fontWeight = FontWeight.Normal,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp

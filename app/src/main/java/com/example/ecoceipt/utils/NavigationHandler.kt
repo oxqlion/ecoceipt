@@ -28,7 +28,6 @@ import com.example.ecoceipt.viewmodels.ProfileViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 
-// Define your navigation routes
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Dashboard", Icons.Filled.Dashboard)
     object Scan : Screen("scan", "Scan", Icons.Filled.QrCodeScanner)
@@ -36,12 +35,10 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Summary : Screen("summary", "Summary", Icons.AutoMirrored.Filled.ReceiptLong)
 }
 
-// List of bottom navigation items
 val bottomNavItems = listOf(
     Screen.Dashboard,
     Screen.Scan,
     Screen.Items,
-//    Screen.Summary
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,9 +80,6 @@ fun BottomNavigationBar(navController: NavController) {
                 ),
                 onClick = {
                     navController.navigate(screen.route) {
-                        // This logic is correct. It pops the back stack to the start
-                        // destination (Dashboard) before navigating. This ensures you
-                        // don't build up a large stack of screens.
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -120,9 +114,6 @@ fun NavigationGraph(
         }
 
         composable("profile") {
-            // CRITICAL FIX: You MUST pass the navController to the ProfileView.
-            // This connects it to the main navigation graph, allowing the
-            // BottomNavigationBar to correctly pop it off the stack.
             val viewModel: ProfileViewModel = viewModel()
             ProfileView(navController = navController, viewModel = viewModel)
         }

@@ -72,14 +72,13 @@ class ReceiptsViewModel(
 
                     val result = AIResultModel(
                         id = UUID.randomUUID().toString(),
-                        receiptId = "", // can be filled later if linked to a specific receipt
+                        receiptId = "",
                         userId = userId,
                         recommendationSummary = summary,
                         recommendationItems = recommendationItems,
                         createdAt = System.currentTimeMillis()
                     )
 
-                    // Save to Firestore
                     llmRepository.upsertAIResultByUserId(result)
                     _aiResult.value = result
 

@@ -10,10 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// UPDATED: Added aiRecommendation to the state
 data class DashboardUiState(
     val userName: String = "",
-    val aiRecommendation: String = "", // New property for the AI summary
+    val aiRecommendation: String = "",
     val selectedPeriod: String = "Weekly",
     val revenueData: List<Pair<String, Double>> = emptyList(),
     val totalRevenue: Double = 0.0,
@@ -37,10 +36,7 @@ class DashboardViewModel : ViewModel() {
         _uiState.update { it.copy(userName = dummyUser.name) }
     }
 
-    // New function to load the AI recommendation
     private fun loadAiRecommendation() {
-        // In the future, this will be fetched from Firebase.
-        // For now, we use a dummy string.
         val dummyRecommendation = "Your sales for 'Nasi Goreng' are trending up this week. Consider promoting it!"
         _uiState.update { it.copy(aiRecommendation = dummyRecommendation) }
     }
@@ -64,7 +60,6 @@ class DashboardViewModel : ViewModel() {
         }
     }
 
-    // --- Dummy Data Generation Functions remain the same ---
     private fun getWeeklyData(): Pair<List<Pair<String, Double>>, Double> {
         val data = listOf(
             "Mon" to 250000.0, "Tue" to 310000.0, "Wed" to 280000.0,

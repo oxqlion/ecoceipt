@@ -23,12 +23,12 @@ class OCRRepository {
             Result.success(
                 ExtractedText(
                     rawText = result.text,
-                    confidence = 0.0f, // ML Kit doesn't provide overall confidence
-                    boundingBoxes = result.textBlocks.map { block: com.google.mlkit.vision.text.Text.TextBlock -> // Explicitly type here
+                    confidence = 0.0f,
+                    boundingBoxes = result.textBlocks.map { block: com.google.mlkit.vision.text.Text.TextBlock ->
                         TextBlock(
                             text = block.text,
-                            boundingBox = block.boundingBox ?: Rect(), // Added import for Rect
-                            confidence = 0.0f // ML Kit TextBlock doesn't directly provide confidence
+                            boundingBox = block.boundingBox ?: Rect(),
+                            confidence = 0.0f
                         )
                     }
                 )

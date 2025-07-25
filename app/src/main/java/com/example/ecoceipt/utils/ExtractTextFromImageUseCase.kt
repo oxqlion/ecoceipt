@@ -16,11 +16,8 @@ class ExtractTextFromImageUseCase(
     }
 
     private fun parseReceiptData(text: String): ReceiptModel {
-        // Implement parsing logic for receipt-specific data
-        // This is where you'd extract store name, date, total, items, etc.
         return ReceiptModel(
             fullText = text,
-            // Add parsing logic for specific fields
         )
     }
 }

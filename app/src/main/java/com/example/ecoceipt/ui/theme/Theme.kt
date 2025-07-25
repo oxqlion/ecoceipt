@@ -1,16 +1,10 @@
-package com.example.tim_sam_2.ui.theme
+package com.example.ecoceipt.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = Green80,
@@ -39,13 +33,11 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun Tim_sam_2Theme(
-    darkTheme: Boolean = false, // Force light mode always
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // Disabled to use our custom green theme
+fun EcoceiptTheme(
+    darkTheme: Boolean = false,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    // Always use light color scheme
     val colorScheme = LightColorScheme
 
     MaterialTheme(

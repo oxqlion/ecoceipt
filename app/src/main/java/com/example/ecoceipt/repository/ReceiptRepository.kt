@@ -2,9 +2,8 @@ package com.example.ecoceipt.repository
 
 import android.util.Log
 import com.example.ecoceipt.models.ReceiptModel
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.tasks.await
 
 class ReceiptRepository(
@@ -23,13 +22,19 @@ class ReceiptRepository(
         }
     }
 
-    suspend fun getReceipt(receiptId: String): ReceiptModel? {
+
+    suspend fun getReceiptsForUser(userId: String): List<ReceiptModel> {
         return try {
-            receiptsRef.document(receiptId).get().await()
-                .toObject(ReceiptModel::class.java)
+            val snapshot = receiptsRef
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+
+            snapshot.toObjects(ReceiptModel::class.java)
+
         } catch (e: Exception) {
-            Log.e("ReceiptRepository", "Error getting receipt", e)
-            null
+            Log.e("ReceiptRepository", "Error fetching receipts for user", e)
+            emptyList()
         }
     }
 

@@ -1,13 +1,11 @@
-package com.example.tim_sam_2.ui.theme
+package com.example.ecoceipt.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Light theme colors
 val Green80 = Color(0xFFA5D6A7)
 val GreenGrey80 = Color(0xFFC8E6C9)
 val Mint80 = Color(0xFFB2DFDB)
 
-// Dark theme colors
 val Green40 = Color(0xFF4CAF50)
 val GreenGrey40 = Color(0xFF66BB6A)
 val Mint40 = Color(0xFF26A69A)

@@ -56,7 +56,6 @@ fun CameraScreen(
                     onNavigateBack = onNavigateBack
                 )
 
-                // Display extracted text
                 viewModel.extractedText?.let { text ->
                     Text(
                         text = text,
@@ -66,7 +65,6 @@ fun CameraScreen(
                     )
                 }
 
-                // Display error
                 viewModel.error?.let { error ->
                     Text(
                         text = "Error: $error",
