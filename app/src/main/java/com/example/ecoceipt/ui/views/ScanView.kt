@@ -20,7 +20,7 @@ import com.example.ecoceipt.ui.viewmodels.OCRViewModelFactory
 fun ScanView(navController: NavController) {
 
     val context = LocalContext.current
-    val factory = remember { OCRViewModelFactory(context) }
+    val factory = remember { OCRViewModelFactory() }
     val viewModel: OCRViewModel = viewModel(factory = factory)
 
     val extractedText by remember { viewModel::extractedText }
