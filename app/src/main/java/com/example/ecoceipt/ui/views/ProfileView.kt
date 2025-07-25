@@ -5,8 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.ecoceipt.viewmodels.ProfileViewModel
-// ... other imports from your original file ...
+import com.example.ecoceipt.ui.viewmodels.ProfileViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,8 +13,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +33,10 @@ import com.example.tim_sam_2.ui.theme.EcoColors
 @Composable
 fun ProfileView(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel() // Inject ViewModel
+    viewModel: ProfileViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val user = uiState.user // Get the user from the state
+    val user = uiState.user
 
     Column(
         modifier = Modifier
@@ -45,7 +47,7 @@ fun ProfileView(
             title = { Text("Profile", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.Default.ArrowBack, "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.ArrowBackIosNew, "Back", tint = MaterialTheme.colorScheme.onSurface)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -54,7 +56,6 @@ fun ProfileView(
             )
         )
 
-        // Only display content if the user is not null
         if (user != null) {
             Column(
                 modifier = Modifier
@@ -74,7 +75,6 @@ fun ProfileView(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         } else {
-            // Optional: Show a loading indicator while user data is being fetched
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -82,9 +82,6 @@ fun ProfileView(
     }
 }
 
-// The rest of ProfileView.kt (sub-composables) remains exactly the same.
-// They were already stateless and will work perfectly with the data passed from the main composable.
-// ... (ProfilePictureSection, UserInfoSection, etc.)
 @Composable
 fun ProfilePictureSection(userName: String) {
     Column(
@@ -230,9 +227,9 @@ fun AppSettingsSection() {
         title = "App Settings",
         items = listOf(
             SettingsItem(Icons.Default.Language, "Language"),
-            SettingsItem(Icons.Default.Help, "Help & Support"),
+            SettingsItem(Icons.AutoMirrored.Filled.Help, "Help & Support"),
             SettingsItem(Icons.Default.Info, "About"),
-            SettingsItem(Icons.Default.Logout, "Sign Out", isDestructive = true)
+            SettingsItem(Icons.AutoMirrored.Filled.Logout, "Sign Out", isDestructive = true)
         )
     )
 }
@@ -257,13 +254,12 @@ fun SettingsSectionCard(title: String, items: List<SettingsItem>) {
             )
             items.forEachIndexed { index, item ->
                 SettingsItemRow(
-                    item = item,
-                    onClick = { /* TODO: Handle setting item click */ }
+                    item = item
                 )
                 if (index < items.size - 1) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                        thickness = DividerDefaults.Thickness, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                     )
                 }
             }
@@ -272,7 +268,7 @@ fun SettingsSectionCard(title: String, items: List<SettingsItem>) {
 }
 
 @Composable
-fun SettingsItemRow(item: SettingsItem, onClick: () -> Unit) {
+fun SettingsItemRow(item: SettingsItem) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

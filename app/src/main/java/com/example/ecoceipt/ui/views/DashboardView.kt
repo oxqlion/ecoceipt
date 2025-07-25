@@ -1,13 +1,14 @@
 package com.example.ecoceipt.ui.views
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.ecoceipt.viewmodels.DashboardViewModel
+import com.example.ecoceipt.ui.viewmodels.DashboardViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,10 +16,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.*
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +40,7 @@ import com.example.ecoceipt.ui.viewmodels.ReceiptsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardView(
@@ -81,18 +84,74 @@ fun DashboardView(
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            RevenueChartSection(
-                selectedPeriod = uiState.selectedPeriod,
-                revenueData = uiState.revenueData,
-                totalRevenue = uiState.totalRevenue
-            )
+            if (uiState.isLoading) {
+                Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                RevenueChartSection(
+                    revenueData = uiState.revenueData,
+                    totalRevenue = uiState.totalRevenue
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
-            ReceiptHistorySection()
+            ReceiptHistorySection(receipts = uiState.receipts)
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
+// --- THIS IS THE ONLY COMPOSABLE THAT WAS CHANGED ---
+@Composable
+fun RevenueBarChart(data: List<Pair<String, Double>>) {
+    // Find the maximum value from the data.
+    val maxValue = data.maxOfOrNull { it.second } ?: 0.0
+
+    // CRITICAL FIX: Create a "safe" maximum value that is at least 1.0 to prevent division by zero.
+    val safeMaxValue = if (maxValue > 0.0) maxValue else 1.0
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        data.forEach { (label, value) ->
+            // Use the safe maximum value for the calculation.
+            val percentage = (value / safeMaxValue).toFloat()
+
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = label,
+                    modifier = Modifier.width(50.dp),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                LinearProgressIndicator(
+                    progress = { percentage },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(12.dp)
+                        .clip(RoundedCornerShape(6.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                    strokeCap = StrokeCap.Butt
+                )
+                Text(
+                    text = formatCurrency(value),
+                    modifier = Modifier
+                        .width(80.dp)
+                        .padding(start = 8.dp),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.End
+                )
+            }
+        }
+    }
+}
+
+
+// The rest of the file is unchanged.
+// ...
 @Composable
 fun AiRecommendationSection(recommendation: String) {
     Card(
@@ -101,7 +160,7 @@ fun AiRecommendationSection(recommendation: String) {
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+//        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -175,7 +234,14 @@ fun TimePeriodSelector(selectedPeriod: String, onPeriodSelected: (String) -> Uni
             val isSelected = selectedPeriod == period
             FilterChip(
                 onClick = { onPeriodSelected(period) },
-                label = { Text(period, fontWeight = FontWeight.Medium) },
+                label = {
+                    Text(
+                        text = period,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
                 selected = isSelected,
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -197,7 +263,6 @@ fun TimePeriodSelector(selectedPeriod: String, onPeriodSelected: (String) -> Uni
 
 @Composable
 fun RevenueChartSection(
-    selectedPeriod: String,
     revenueData: List<Pair<String, Double>>,
     totalRevenue: Double
 ) {
@@ -205,7 +270,7 @@ fun RevenueChartSection(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+//        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -240,53 +305,14 @@ fun RevenueChartSection(
     }
 }
 
-@Composable
-fun RevenueBarChart(data: List<Pair<String, Double>>) {
-    val maxValue = data.maxOfOrNull { it.second } ?: 1.0
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        data.forEach { (label, value) ->
-            val percentage = (value / maxValue).toFloat()
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = label,
-                    modifier = Modifier.width(50.dp),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                LinearProgressIndicator(
-                    progress = { percentage },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(6.dp)),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                    strokeCap = StrokeCap.Butt
-                )
-                Text(
-                    text = formatCurrency(value),
-                    modifier = Modifier
-                        .width(80.dp)
-                        .padding(start = 8.dp),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.End
-                )
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReceiptHistorySection() {
+fun ReceiptHistorySection(receipts: List<ReceiptModel>) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
-    val dummyReceipts = remember { createDummyReceipts() }
+
     val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
-    val filteredReceipts = dummyReceipts.filter { isSameDay(it.date, selectedDateMillis) }
+    val filteredReceipts = receipts.filter { isSameDay(it.date, selectedDateMillis) }
 
     Column {
         Row(
@@ -327,16 +353,8 @@ fun ReceiptHistorySection() {
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
-                }
-            }
+            confirmButton = { TextButton(onClick = { showDatePicker = false }) { Text("OK") } },
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
         ) {
             DatePicker(state = datePickerState)
         }
@@ -369,7 +387,7 @@ fun ReceiptItemCard(receipt: ReceiptModel) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -378,7 +396,7 @@ fun ReceiptItemCard(receipt: ReceiptModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.ReceiptLong,
+                imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                 contentDescription = "Receipt",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)

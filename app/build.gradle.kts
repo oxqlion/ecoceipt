@@ -72,13 +72,13 @@ dependencies {
 
     // ML Kit Text Recognition
     implementation("com.google.mlkit:text-recognition:16.0.0")
-// Camera
+    // Camera
     implementation("androidx.camera:camera-camera2:1.3.0")
     implementation("androidx.camera:camera-lifecycle:1.3.0")
     implementation("androidx.camera:camera-view:1.3.0")
-// Image handling
+    // Image handling
     implementation("io.coil-kt:coil-compose:2.4.0")
-// Permissions
+    // Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
     // Add these if not already present

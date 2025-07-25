@@ -30,7 +30,7 @@ fun ItemListView(
     viewModel: ItemListViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true) // Fully expand sheet
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
         topBar = {
@@ -42,7 +42,8 @@ fun ItemListView(
                 )
             )
         }
-        // REMOVED: The FloatingActionButton is no longer here.
+        // REMOVED: The FloatingActionButton for adding items is no longer here.
+        // The `addItem` function still exists in the ViewModel for future use.
     ) { paddingValues ->
 
         Box(
@@ -54,7 +55,7 @@ fun ItemListView(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (uiState.items.isEmpty()) {
                 Text(
-                    // UPDATED: Changed empty state text
+                    // UPDATED: The text no longer prompts the user to add an item.
                     text = "No items available.",
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -83,7 +84,7 @@ fun ItemListView(
                 onDismissRequest = { viewModel.onDismissSheet() },
                 sheetState = sheetState
             ) {
-                // Pass the selected item which is guaranteed to be non-null here
+                // The sheet is now only for editing. We can safely assume selectedItem is not null.
                 uiState.selectedItem?.let { itemToEdit ->
                     ItemFormSheetContent(
                         selectedItem = itemToEdit,
@@ -99,6 +100,82 @@ fun ItemListView(
     }
 }
 
+@Composable
+fun ItemFormSheetContent(
+    selectedItem: ItemModel, // Now non-nullable as it's only for editing
+    onSave: (id: String, name: String, price: String, description: String) -> Unit,
+    onCancel: () -> Unit
+) {
+    var name by remember { mutableStateOf(selectedItem.name) }
+    var price by remember { mutableStateOf(selectedItem.price.takeIf { it > 0 }?.toString() ?: "") }
+    var description by remember { mutableStateOf(selectedItem.description) }
+
+    val isFormValid = name.isNotBlank() && price.isNotBlank()
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+    ) {
+        Text(
+            text = "Edit Item",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            textAlign = TextAlign.Center
+        )
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Item Name*") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = price,
+            onValueChange = { price = it },
+            label = { Text("Price (IDR)*") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description (Optional)") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
+                Text("Cancel")
+            }
+            Button(
+                onClick = { onSave(selectedItem.id, name, price, description) },
+                modifier = Modifier.weight(1f),
+                enabled = isFormValid
+            ) {
+                Text("Save Item")
+            }
+        }
+    }
+}
+
+
+// ItemCard and formatItemPrice are unchanged.
 @Composable
 fun ItemCard(
     item: ItemModel,
@@ -155,92 +232,6 @@ fun ItemCard(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Edit")
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun ItemFormSheetContent(
-    selectedItem: ItemModel,
-    onSave: (id: String, name: String, price: String, description: String) -> Unit,
-    onCancel: () -> Unit
-) {
-    var name by remember { mutableStateOf(selectedItem.name) }
-    var price by remember { mutableStateOf(selectedItem.price.takeIf { it > 0 }?.toString() ?: "") }
-    var description by remember { mutableStateOf(selectedItem.description) }
-
-    val isFormValid = name.isNotBlank() && price.isNotBlank()
-
-    Column(
-        // CRITICAL FIX: Added windowInsetsPadding to avoid the system navigation bar
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.navigationBars)
-    ) {
-        // Drag handle - a nice touch for bottom sheets
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Divider(
-                modifier = Modifier
-                    .width(40.dp)
-                    .padding(vertical = 12.dp),
-                thickness = 4.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-            )
-        }
-
-        Text(
-            text = "Edit Item", // Title is now static
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            textAlign = TextAlign.Center
-        )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Item Name*") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedTextField(
-            value = price,
-            onValueChange = { price = it },
-            label = { Text("Price (IDR)*") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description (Optional)") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp), // Padding at the very bottom
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
-                Text("Cancel")
-            }
-            Button(
-                onClick = { onSave(selectedItem.id, name, price, description) },
-                modifier = Modifier.weight(1f),
-                enabled = isFormValid
-            ) {
-                Text("Save Item")
             }
         }
     }

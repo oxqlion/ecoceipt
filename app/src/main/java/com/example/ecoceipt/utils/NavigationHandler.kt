@@ -1,7 +1,8 @@
-package com.example.tim_sam_2.utils
+package com.example.ecoceipt.utils
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -23,8 +24,8 @@ import com.example.ecoceipt.ui.views.ItemListView
 import com.example.ecoceipt.ui.views.OCRSummaryView
 import com.example.ecoceipt.ui.views.ProfileView
 import com.example.ecoceipt.ui.views.ScanView
-import com.example.ecoceipt.viewmodels.DashboardViewModel
-import com.example.ecoceipt.viewmodels.ProfileViewModel
+import com.example.ecoceipt.ui.viewmodels.DashboardViewModel
+import com.example.ecoceipt.ui.viewmodels.ProfileViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 
@@ -32,8 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Dashboard", Icons.Filled.Dashboard)
     object Scan : Screen("scan", "Scan", Icons.Filled.QrCodeScanner)
-    object Items : Screen("items", "Items", Icons.Filled.List)
-    object Summary : Screen("summary", "Summary", Icons.AutoMirrored.Filled.ReceiptLong)
+    object Items : Screen("items", "Items", Icons.AutoMirrored.Filled.List)
 }
 
 // List of bottom navigation items

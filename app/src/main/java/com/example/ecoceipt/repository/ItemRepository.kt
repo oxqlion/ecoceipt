@@ -10,35 +10,22 @@ class ItemRepository(
 ) {
     private val itemsRef = db.collection("items")
 
-    suspend fun addItem(item: ItemModel): Boolean {
-        return try {
-            val docRef = itemsRef.document()
-            val itemWithId = item.copy(id = docRef.id)
-            docRef.set(itemWithId).await()
-            true
-        } catch (e: Exception) {
-            Log.e("ItemRepository", "Error adding item", e)
-            false
-        }
+    suspend fun addItem(item: ItemModel) {
+        val docRef = itemsRef.document()
+        val itemWithId = item.copy(id = docRef.id)
+        docRef.set(itemWithId).await()
     }
 
     suspend fun getItems(): List<ItemModel> {
-        return try {
-            val snapshot = itemsRef.get().await()
-            snapshot.toObjects(ItemModel::class.java)
-        } catch (e: Exception) {
-            Log.e("ItemRepository", "Error fetching items", e)
-            emptyList()
-        }
+        val snapshot = itemsRef.orderBy("name").get().await()
+        return snapshot.toObjects(ItemModel::class.java)
     }
 
-    suspend fun deleteItem(itemId: String): Boolean {
-        return try {
-            itemsRef.document(itemId).delete().await()
-            true
-        } catch (e: Exception) {
-            Log.e("ItemRepository", "Error deleting item", e)
-            false
-        }
+    suspend fun updateItem(item: ItemModel) {
+        itemsRef.document(item.id).set(item).await()
+    }
+
+    suspend fun deleteItem(itemId: String) {
+        itemsRef.document(itemId).delete().await()
     }
 }
