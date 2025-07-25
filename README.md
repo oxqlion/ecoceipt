@@ -67,9 +67,9 @@ Overstocking contributes to unnecessary food waste, which releases harmful green
 ---
 
 ## 🧠 Team Members
-  - Rafi
-  - Sam
-  - Hayya
+  - Rafi Abhista Naya
+  - Samuel Miracle Kristanto
+  - Hayya U
 
 ---
 
