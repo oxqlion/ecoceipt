@@ -8,7 +8,7 @@ data class ReceiptModel(
     val date: Long = System.currentTimeMillis(),
     val totalAmount: Double = 0.0,
     val currency: String = "IDR",
-    val items: List<ItemModel> = emptyList(),
+    val items: List<PurchasedItemModel> = emptyList(),
     val taxAmount: Double = 0.0,
     val discountAmount: Double = 0.0,
     val fullText: String = "",
