@@ -1,5 +1,6 @@
 package com.example.ecoceipt.ui.views
 
+import android.util.Log
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,7 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ecoceipt.models.ItemModel
+import com.example.ecoceipt.models.PurchasedItemModel
 import com.example.ecoceipt.models.ReceiptModel
+import com.example.ecoceipt.ui.viewmodels.ReceiptsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -39,9 +42,14 @@ import java.util.*
 @Composable
 fun DashboardView(
     navController: NavController,
-    viewModel: DashboardViewModel = viewModel()
+    viewModel: DashboardViewModel = viewModel(),
+    viewModelReceipt: ReceiptsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModelReceipt.getRecommendation("3s8mnAExkbJHYOVnVrfQ")
+    }
 
     Box(
         modifier = Modifier
@@ -403,11 +411,12 @@ fun createDummyReceipts(): List<ReceiptModel> {
     val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
     val twoDaysAgo = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -2) }
     return listOf(
-        ReceiptModel(id = "TXN1001", date = today.timeInMillis, totalAmount = 75000.0, items = listOf(ItemModel(), ItemModel())),
-        ReceiptModel(id = "TXN1002", date = today.timeInMillis, totalAmount = 120000.0, items = listOf(ItemModel(), ItemModel(), ItemModel())),
-        ReceiptModel(id = "TXN1003", date = yesterday.timeInMillis, totalAmount = 50000.0, items = listOf(ItemModel())),
-        ReceiptModel(id = "TXN1004", date = yesterday.timeInMillis, totalAmount = 250000.0, items = (1..5).map { ItemModel() }),
-        ReceiptModel(id = "TXN1005", date = twoDaysAgo.timeInMillis, totalAmount = 95000.0, items = (1..3).map { ItemModel() })
+        ReceiptModel(id = "TXN1001", date = today.timeInMillis, totalAmount = 75000.0, items = listOf(
+            PurchasedItemModel(), PurchasedItemModel())),
+        ReceiptModel(id = "TXN1002", date = today.timeInMillis, totalAmount = 120000.0, items = listOf(PurchasedItemModel(), PurchasedItemModel(), PurchasedItemModel())),
+        ReceiptModel(id = "TXN1003", date = yesterday.timeInMillis, totalAmount = 50000.0, items = listOf(PurchasedItemModel())),
+        ReceiptModel(id = "TXN1004", date = yesterday.timeInMillis, totalAmount = 250000.0, items = (1..5).map { PurchasedItemModel() }),
+        ReceiptModel(id = "TXN1005", date = twoDaysAgo.timeInMillis, totalAmount = 95000.0, items = (1..3).map { PurchasedItemModel() })
     )
 }
 

@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class OCRViewModel constructor(
+class OCRViewModel(
     private val extractTextFromImageUseCase: ExtractTextFromImageUseCase
 ) : ViewModel() {
     var extractedText by mutableStateOf<String?>(null)
@@ -47,7 +47,6 @@ class OCRViewModel constructor(
                 _ocrResult = gemini_result ?: "Failed to extract"
                 result
                     .onSuccess { receiptModel ->
-//                    extractedText = receiptModel.fullText
                         extractedText = _ocrResult
                         error = null
                         Log.d("OCRViewModel", "Success di OCRViewModel: $extractedText")
@@ -62,20 +61,9 @@ class OCRViewModel constructor(
             }
         }
     }
-
-    fun processImage(context: Context, uri: Uri) {
-        viewModelScope.launch {
-            val base64 = encodeImageToBase64(context, uri)
-            val result = callGeminiWithImage(base64)
-            _ocrResult = result ?: "Failed to extract"
-        }
-    }
-
 }
 
-class OCRViewModelFactory(
-    private val context: Context
-) : ViewModelProvider.Factory {
+class OCRViewModelFactory: ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val repository = OCRRepository()
         val useCase = ExtractTextFromImageUseCase(repository)
@@ -103,10 +91,10 @@ suspend fun callGeminiWithImage(base64Image: String): String? {
                     ),
                     Part(text = "You are a smart receipt reader that extracts structured data from images of printed or handwritten receipts. Read the text from this image, and return a structured summary with the following fields:\n" +
                             " - store name : <store name or best guess>\n" +
-                            "- date and time : <exact or estimated date/time>\n" +
+                            "- date and time : <exact or estimated date/time with the format of DD/MM/YYYY>\n" +
                             "- items : [\n" +
-                            "[item name 1, price],\n" +
-                            "[item name 2, price],\n" +
+                            "[item name 1, quantity,price],\n" +
+                            "[item name 2, quantity,price],\n" +
                             "...\n" +
                             "]\n" +
                             "- subtotal : <subtotal amount>\n" +

@@ -13,7 +13,7 @@ interface GeminiApi {
     @POST("v1beta/models/gemini-2.5-flash:generateContent")
     @Headers(
         "Content-Type: application/json",
-        "x-goog-api-key: YOUR_API_KEY" // ⚠️ DO NOT ship this in production
+        "x-goog-api-key: AIzaSyCChWMVUOki1imB1F6hkP6go_0YjEAk3Og" // ⚠️ DO NOT ship this in production
     )
     suspend fun generateContent(@Body request: GeminiRequest): GeminiResponse
 }

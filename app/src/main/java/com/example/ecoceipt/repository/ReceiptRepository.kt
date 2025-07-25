@@ -14,6 +14,7 @@ class ReceiptRepository(
 
     suspend fun addReceipt(receipt: ReceiptModel): Boolean {
         return try {
+            Log.d("ReceiptRepository", "Adding receipt: $receipt")
             receiptsRef.document(receipt.id).set(receipt).await()
             true
         } catch (e: Exception) {
@@ -32,16 +33,18 @@ class ReceiptRepository(
         }
     }
 
-    suspend fun getReceiptsForUser(userId: String): List<ReceiptModel> {
+    suspend fun getReceiptTextsByUser(userId: String): List<String> {
         return try {
             val snapshot = receiptsRef
                 .whereEqualTo("userId", userId)
                 .get()
                 .await()
 
+            Log.d("ReceiptRepository", "Fetched receipts for user: ${snapshot.toObjects(ReceiptModel::class.java)}")
             snapshot.toObjects(ReceiptModel::class.java)
+                .map { it.fullText }
         } catch (e: Exception) {
-            Log.e("ReceiptRepository", "Error fetching receipts", e)
+            Log.e("ReceiptRepository", "Error fetching recent receipt texts", e)
             emptyList()
         }
     }
